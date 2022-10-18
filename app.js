@@ -2,6 +2,7 @@ const express = require('express')
 const ip = require('ip')
 const fs = require('fs')
 const https = require('https')
+const postmanReq = require('postman-request')
 
 const app = express()
 app.use(express.json())
@@ -22,9 +23,8 @@ app.get('/auth/:personalNumber', async (req, res) => {
         
         
         const options = {
-            hostname: 'appapi2.test.bankid.com',
+            url: 'appapi2.bankid.com/rp/v5.1/auth',
             port: 443,
-            path: '/rp/v5.1/auth',
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -41,10 +41,10 @@ app.get('/auth/:personalNumber', async (req, res) => {
           
       
         
-        const pnoRequest = https.request(options, (req, response) => {
-            //console.log(req)
-            console.log('Response: ' + response)
-            res.send('Response : ' + response)
+          postmanReq(options, (req,res) => {
+            console.log(req)
+            console.log('Response: ' + res)
+            //res.send('Response : ' + res)
             
         })
           
