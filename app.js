@@ -38,13 +38,9 @@ app.get('/auth', async (req, res) => {
     timeout: 5000,
   }
  
-  let d = await doPostToDoItem(data, options);
+  let d = await getDetailsForCollect(data, options);
         console.log(d);
         parsedData = JSON.parse(d);
-
-        this.qrStartSecret = parsedData.qrStartSecret;
-        this.orderRef = parsedData.orderRef;
-        this.qrStartToken = parsedData.qrStartToken;
 
   res.send('orderRef : ' +parsedData.orderRef)
           
@@ -58,7 +54,7 @@ app.listen(port, () => {
     console.log('Server is up on port: ' + port)
 })
 
-const doPostToDoItem = async (data, options) => {
+const getDetailsForCollect = async (data, options) => {
   //console.log('dopost function')
   let responseBody = '';
 
