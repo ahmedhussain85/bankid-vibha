@@ -2,16 +2,18 @@ const express = require('express')
 const ip = require('ip')
 const fs = require('fs')
 const https = require('https')
-//const postmanReq = require('postman-request')
+const QRCode = require('qrcode');
+//const qrimg = require('qr-image'); 
 
 const app = express()
 app.use(express.json())
+//app.set("view engine", "ejs");
 
 const port = process.env.PORT || 3001
 const userIp = ip.address()
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('Hello')
   })
 
 app.get('/auth', async (req, res) => {
@@ -39,19 +41,26 @@ app.get('/auth', async (req, res) => {
   }
  
   let d = await getDetailsForCollect(data, options);
-        console.log(d);
+        //console.log(d);
         parsedData = JSON.parse(d);
+  
+  var qrgeneratedcode = "bankid." + parsedData.qrStartToken + "." + 0 + "." + parsedData.qrStartSecret;
+  let stringdata = JSON.stringify(qrgeneratedcode)
 
-  res.send('orderRef : ' +parsedData.orderRef)
-          
-})
+      // Print the QR code to terminal
+    QRCode.toString(stringdata,{type:'terminal'},
+    function (err, QRcode) {
 
+    if(err) {
+      return console.log("error occurred")
+    }
+    // Printing the generated code
+    console.log(QRcode)
+    
+    })
 
-
-
-
-app.listen(port, () => {
-    console.log('Server is up on port: ' + port)
+  res.send('See QR Code in console')
+         
 })
 
 const getDetailsForCollect = async (data, options) => {
@@ -83,3 +92,7 @@ const getDetailsForCollect = async (data, options) => {
   return responseBody;
 }
 
+
+app.listen(port, () => {
+  console.log('Server is up on port: ' + port)
+})
