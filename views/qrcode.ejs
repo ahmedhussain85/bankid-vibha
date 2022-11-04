@@ -1,0 +1,12 @@
+<%- include('header.ejs') %>
+<%- include('qr.ejs') %>
+<meta name="csrf-token" content="{{ csrf_token() }}" />
+<script>
+var qrIm = "<%= qrImg %>";
+var orderStatus = "<%= orderStatus %>";
+
+
+console.log("qrImg is " + qrIm);
+
+</script>
+<%- include('footer.ejs') %>

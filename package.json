@@ -12,6 +12,7 @@
     "ejs": "^3.1.8",
     "express": "^4.18.2",
     "ip": "^1.1.8",
+    "pdfjs": "^2.4.7",
     "postman-request": "^2.88.1-postman.31",
     "qr-image": "^3.2.0",
     "qrcode": "^1.5.1"
