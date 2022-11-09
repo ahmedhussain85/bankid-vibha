@@ -26,12 +26,15 @@ function checkURI(q){
   if(!q.query){
     console.log("NO PARAMS PASSED");
   }
-  else{
-    console.log("[orderRef] Input param is: "+q.query.orderRef);
-    console.log("[startTime] Input param is: "+q.query.startTime);
-    console.log("[qrStartSecret] Input param is: "+q.query.qrStartSecret);
-  }
+  // else{
+  //   console.log("[orderRef] Input param is: "+q.query.orderRef);
+  //   console.log("[startTime] Input param is: "+q.query.startTime);
+  //   console.log("[qrStartSecret] Input param is: "+q.query.qrStartSecret);
+  // }
 }
+app.get('/home', async (req, res) => {
+  res.render('home')
+})
  //QR Code Call
  app.get('/authqrcode', async (req, res) => {
   checkURI(req);  
@@ -48,8 +51,9 @@ function checkURI(q){
 
   var qrgeneratedcode = "bankid." + bId.qrStartToken + "." + bId.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bId.time.toString()).digest('hex');
   bId.generatedQrCode = qrgeneratedcode;
-  console.log("generated qrimage is " + bId.generatedQrCode);
+  //console.log("generated qrimage is " + bId.generatedQrCode);
   res.render("qrcode", {qrImg: bId.generatedQrCode, orderStatus: bId.orderStat}); // qrcode refers to qrcode.ejs
+  
 })
 
 app.get('/ajaxcall/', async (req, res) => {
@@ -61,7 +65,10 @@ app.get('/ajaxcall/', async (req, res) => {
   await bId.orderStatus();
   if(bId.orderStat == "complete")
   {
+    
+    
     console.log("Order Complete");
+    //res.send('home');
   }
   else if (bId.orderStat == "failed")
   {

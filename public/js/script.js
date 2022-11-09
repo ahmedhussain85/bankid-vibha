@@ -26,7 +26,8 @@ var renew = setInterval(function(){
     if(orderStat == "complete")
     {
         clearInterval(renew);
-        alert("Successfully logged in with BankID!");
+        window.location.href= '/home'
+        //alert("Successfully logged in with BankID!");
     }
     else if(hint == "startFailed")
     {
