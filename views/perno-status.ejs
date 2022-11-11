@@ -1,0 +1,11 @@
+<%- include('header.ejs') %>
+<%- include('pernoqr.ejs') %>
+<meta name="csrf-token" content="{{ csrf_token() }}" />
+<script>
+var orderStatus = "<%= orderStatus %>";
+
+</script>
+<div id="qrcode"></div>
+<script src="/js/sign.js"></script>
+</body>
+</html>

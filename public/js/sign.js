@@ -2,7 +2,7 @@
 
 console.log("This is coming from script.js");
 
-var qrGeneratedCode = qrIm;
+//var qrGeneratedCode = qrIm;
 let loginStatus = '';
 //let hintCode = "outstandingTransaction";
 var orderStat = orderStatus;
@@ -14,14 +14,7 @@ $.ajaxSetup({
     cache:false,
     dataType: "json",
 });
-var qrcode = new QRCode(document.getElementById("qrcode"), {
-    text: qrGeneratedCode,
-    width: 256,
-    height: 256,
-    colorDark : "#000000",
-    colorLight : "#ffffff",
-    correctLevel : QRCode.CorrectLevel.H
-});
+
 var renew = setInterval(function(){
     if(orderStat == "complete")
     {
@@ -37,14 +30,13 @@ var renew = setInterval(function(){
     else if (hint == "outstandingTransaction" || hint == "userSign")
     {
         const Url = "/ajaxcall/";
-        console.log("ajax call");
         $.ajax({url: Url}).done(function (resp) {
             console.log("got response");
-            qrGeneratedCode = resp.qrImg;
+            //qrGeneratedCode = resp.qrImg;
             orderStat = resp.orderStatus;
             hint = resp.hintCode;
-            qrcode.clear()
-            qrcode.makeCode(qrGeneratedCode);
+            //qrcode.clear()
+            //qrcode.makeCode(qrGeneratedCode);
     
             //console.log ("orderStat:" +resp.orderStatus);
             console.log ("hint:" +hint);

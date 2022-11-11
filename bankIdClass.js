@@ -128,26 +128,27 @@ class BankId {
         
     }
 
-    async signQr()
+    async signQr(prno)
     {
         // const documentToSign = "vaccine.pdf"
         const message = "I hearby sign the document "  + this.documentToSign + " using bankid";
         var parsedData;
         
-        const loadingTask = this.pdfjsLib.getDocument(this.documentToSign);
-        const pdf = await loadingTask.promise;
+        // const loadingTask = this.pdfjsLib.getDocument(this.documentToSign);
+        // const pdf = await loadingTask.promise;
 
-        const fingerprints = await JSON.stringify(pdf.fingerprints.join(""));
+        // const fingerprints = await JSON.stringify(pdf.fingerprints.join(""));
         //console.log(fingerprints);
       
         const data = JSON.stringify({
-            personalNumber:"190000000000",
+            personalNumber:prno,
             endUserIp: "83.254.22.249",
             requirement: { "allowFingerprint": true
           },
           userVisibleData: Buffer.from(message).toString('base64')
           //userNonVisibleData: Buffer.from(fingerprints).toString('base64'),
         })
+        console.log(data)
         
         const options = {
           hostname: 'appapi2.test.bankid.com',

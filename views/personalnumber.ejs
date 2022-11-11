@@ -1,0 +1,19 @@
+<%- include('header.ejs') %>
+<div class="login-form">
+    <form action="/signqrcode" method="post">
+      <div class="form-control">
+        <label for="name">Fill in your social security number</label>
+        <input
+          type="text"
+          name="personalNumber"
+          id="personalNumber"
+          placeholder="yyyymmddnnnn"
+          required
+        />
+      </div>
+      <div class="form-control">
+        <button type="submit" class="btn">Login</button>
+      </div>      
+    </form>    
+  </div>
+  <%- include('footer.ejs') %>

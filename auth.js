@@ -11,6 +11,7 @@ const pdfjsLib = require("pdfjs");
 const crypto = require('crypto');
 
 const app = express()
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.set("view engine", "ejs");
 
@@ -32,6 +33,9 @@ function checkURI(q){
   //   console.log("[qrStartSecret] Input param is: "+q.query.qrStartSecret);
   // }
 }
+app.get('/', async (req, res) => {
+  res.render('index')
+})
 app.get('/home', async (req, res) => {
   res.render('home')
 })
@@ -54,6 +58,31 @@ app.get('/home', async (req, res) => {
   //console.log("generated qrimage is " + bId.generatedQrCode);
   res.render("qrcode", {qrImg: bId.generatedQrCode, orderStatus: bId.orderStat}); // qrcode refers to qrcode.ejs
   
+})
+app.get('/privetnumber', async (req, res) => {
+  res.render('personalnumber')
+})
+
+app.post('/signqrcode', async (req, res) => {
+  checkURI(req);  
+  //checkipaddress();
+  bId.time = 0;
+  bId.sign = true;
+  
+  const personalNumber = req.body.personalNumber
+  if(!personalNumber){
+    return res.send("Please Enter social security number")
+  }
+  bId.documentToSign = "Bolagsverket.pdf";
+  await bId.signQr(personalNumber);
+  await bId.orderStatus();
+ 
+  var qrStartSecret = bId.qrStartSecret;
+
+  var qrgeneratedcode = "bankid." + bId.qrStartToken + "." + bId.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bId.time.toString()).digest('hex');
+  bId.generatedQrCode = qrgeneratedcode;
+  
+  res.render("perno-status", {qrImg: bId.generatedQrCode, orderStatus:bId.orderStat}); // qrcode refers to qrcode.ejs
 })
 
 app.get('/ajaxcall/', async (req, res) => {
