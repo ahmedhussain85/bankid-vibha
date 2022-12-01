@@ -125,6 +125,7 @@ class BankId {
         this.qrStartSecret = parsedData.qrStartSecret;
         this.orderRef = parsedData.orderRef;
         this.qrStartToken = parsedData.qrStartToken;
+        this.autoStartToken = parsedData.autoStartToken
         
     }
 
@@ -176,6 +177,52 @@ class BankId {
         this.orderRef = parsedData.orderRef;
         this.qrStartToken = parsedData.qrStartToken;
     }
+
+    ///////////////////////////////////////
+    async sameDevice()
+    {
+        var parsedData;
+        const data = JSON.stringify({
+            endUserIp       : "83.254.22.249",
+            requirement     : {"allowFingerprint": true},
+          })
+        const options = {
+            hostname: 'appapi2.test.bankid.com',
+            port: 443,
+            path: '/rp/v5.1/auth',
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': data.length
+            },
+            json: true,
+            pfx: this.fs.readFileSync('./FPTestcert4_20220818.p12'),
+            //key: this.fs.readFileSync('./bankid-test.key.pem'),
+            //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
+            passphrase: 'qwerty123',
+            rejectUnauthorized: false,
+            resolveWithFullResponse: true,
+            timeout: 5000,   
+        }
+        try{
+            let d = await this.doPostToDoItem(data, options);
+            parsedData = JSON.parse(d);
+
+            console.log(d);
+
+        }
+        catch (err) {
+            console.error(err);
+        }
+    
+        this.qrStartSecret = parsedData.qrStartSecret;
+        this.orderRef = parsedData.orderRef;
+        this.qrStartToken = parsedData.qrStartToken;
+        this.autoStartToken = parsedData.autoStartToken
+        
+        
+    }
+    ///////////////////////////////////////////////////
 
     async doPostToDoItem(data, options) {
         let responseBody = '';

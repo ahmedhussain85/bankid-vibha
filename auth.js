@@ -55,7 +55,8 @@ app.get('/home', async (req, res) => {
 
   var qrgeneratedcode = "bankid." + bId.qrStartToken + "." + bId.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bId.time.toString()).digest('hex');
   bId.generatedQrCode = qrgeneratedcode;
-  //console.log("generated qrimage is " + bId.generatedQrCode);
+  //console.log("generated qrimage is " + bId.autoStartToken);
+  
   res.render("qrcode", {qrImg: bId.generatedQrCode, orderStatus: bId.orderStat}); // qrcode refers to qrcode.ejs
   
 })
@@ -169,3 +170,56 @@ app.get('/ajaxcall/', async (req, res) => {
 app.listen(port, () => {
   console.log('Server is up on port: ' + port)
 })
+
+
+app.get('/onsamedevice', async (req, res) => {
+  checkURI(req);  
+  //checkipaddress();
+  bId.time = 0;
+  bId.sign = true;
+  
+  await bId.sameDevice();
+
+  //await bId.orderStatus();
+
+  console.log(bId.autoStartToken)
+  
+  const nativeApp = https.request(`https://appapi2.test.bankid.com/?autostarttoken=[${bId.autoStartToken}]&redirect=null`)
+  console.log(nativeApp)
+})
+
+const launchUrls = autoStartToken =>
+  (launchParams => ({
+      url: `bankid://${launchParams}`,
+      iosUrl: `https://app.bankid.com${launchParams}`,
+    })
+  )(`/?autostarttoken=[${autoStartToken}]&redirect=null`);
+
+const persistResult = bankIdResult =>
+  // FIXME - YOU MUST STORE:
+  //   bankIdResult.signature
+  //   bankIdResult.user
+  //   bankIdResult.ocspResponse
+  true;
+
+const flow = async (apiCall, params, launchFn) => {
+  const {autoStartToken, orderRef} = await apiCall(...params);
+  if (!autoStartToken || !orderRef) {
+    throw new Error('Request failed');
+  }
+
+  launchFn && launchFn({...launchUrls(autoStartToken), orderRef});
+
+  while (true) {
+    const {status, hintCode, completionData} = await collect(orderRef);
+    if (status === 'failed') {
+      return {ok: false, status: hintCode};
+    } else if (status === 'complete') {
+      persistResult(completionData);
+      return {ok: true, status: completionData};
+    } else {
+      console.log(hintCode);
+    }
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+};
