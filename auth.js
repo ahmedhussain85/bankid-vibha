@@ -10,6 +10,11 @@ const path = require("path");
 const pdfjsLib = require("pdfjs");
 const crypto = require('crypto');
 
+const SignPDF = require('./models/sign')
+const multer = require('multer')
+const sharp = require('sharp')
+require('./db/mongoose')
+
 const app = express()
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
@@ -178,48 +183,79 @@ app.get('/onsamedevice', async (req, res) => {
   bId.time = 0;
   bId.sign = true;
   
-  await bId.sameDevice();
+  await bId.authQr();
 
-  //await bId.orderStatus();
+  await bId.orderStatus();
 
   console.log(bId.autoStartToken)
   
-  const nativeApp = https.request(`https://appapi2.test.bankid.com/?autostarttoken=[${bId.autoStartToken}]&redirect=null`)
-  console.log(nativeApp)
+  const options = {
+    hostname: `appapi2.test.bankid.com`,
+    port: 443,
+    method: 'POST',
+    path: `/?autostarttoken=[${bId.autoStartToken}]&redirect=null`,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    json: true,
+    //key: this.fs.readFileSync('./bankid-test.key.pem'),
+    //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
+    passphrase: 'qwerty123',
+    rejectUnauthorized: false,
+    resolveWithFullResponse: true,
+    timeout: 5000,   
+}
+
+  //const options = new URL(`https://appapi2.test.bankid.com/?autostarttoken=[${bId.autoStartToken}]&redirect=null`);
+
+  res.send(options.href)
+  
 })
 
-const launchUrls = autoStartToken =>
-  (launchParams => ({
-      url: `bankid://${launchParams}`,
-      iosUrl: `https://app.bankid.com${launchParams}`,
-    })
-  )(`/?autostarttoken=[${autoStartToken}]&redirect=null`);
 
-const persistResult = bankIdResult =>
-  // FIXME - YOU MUST STORE:
-  //   bankIdResult.signature
-  //   bankIdResult.user
-  //   bankIdResult.ocspResponse
-  true;
+ const storage = multer.memoryStorage()
 
-const flow = async (apiCall, params, launchFn) => {
-  const {autoStartToken, orderRef} = await apiCall(...params);
-  if (!autoStartToken || !orderRef) {
-    throw new Error('Request failed');
-  }
-
-  launchFn && launchFn({...launchUrls(autoStartToken), orderRef});
-
-  while (true) {
-    const {status, hintCode, completionData} = await collect(orderRef);
-    if (status === 'failed') {
-      return {ok: false, status: hintCode};
-    } else if (status === 'complete') {
-      persistResult(completionData);
-      return {ok: true, status: completionData};
-    } else {
-      console.log(hintCode);
+var upload = multer({ 
+  limits: {
+    fileSize: 1000000
+  },
+  fileFilter(req, file, cb) {
+    if(!file.originalname.endsWith('.pdf')) {
+      return cb(new Error('Please upload a PDF file only!'))
     }
-    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    cb(undefined, true)
   }
-};
+
+});
+
+app.post('/signdocs', upload.single('upload'), async (req, res) => {
+  const buffer = req.file.buffer
+ 
+    const pdfDocs = new SignPDF(buffer)
+    pdfDocs.upload = buffer
+
+    try{
+      const token = await pdfDocs.save()
+        res.status(201).send('Uploaded successfully')
+    }catch(e) {
+        res.status(400).send(e) 
+    }
+},(error, req, res, next) => {
+  res.status(404).send({error: error.message})
+})
+
+app.get('/signdocs/:id', async (req, res) => {
+  try{
+      const user = await SignPDF.findById(req.params.id)
+
+      if(!user || !user.upload) {
+          throw new Error()
+      }
+
+      res.set('Content-Type', 'application/pdf')
+      res.send(user.upload)
+  } catch(e) {
+      res.status(404).send()
+  }
+})

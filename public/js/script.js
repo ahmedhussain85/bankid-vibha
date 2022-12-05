@@ -69,14 +69,14 @@ var renew = setInterval(function(){
     //console.log("iteration is %d", i);
 },3000);
 
-fetch('/signqrcode', {
+fetch('/signdocs', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
     },
     body: JSON.stringify({
         user: {
-            personalNumber: personalNumber,
+            pdfDocs: pdfDocs,
             //email: "john@example.com"
         }
     })
