@@ -69,15 +69,3 @@ var renew = setInterval(function(){
     //console.log("iteration is %d", i);
 },3000);
 
-fetch('/signdocs', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        user: {
-            pdfDocs: pdfDocs,
-            //email: "john@example.com"
-        }
-    })
-});

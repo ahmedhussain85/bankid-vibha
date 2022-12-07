@@ -189,26 +189,26 @@ app.get('/onsamedevice', async (req, res) => {
 
   console.log(bId.autoStartToken)
   
-  const options = {
-    hostname: `appapi2.test.bankid.com`,
-    port: 443,
-    method: 'POST',
-    path: `/?autostarttoken=[${bId.autoStartToken}]&redirect=null`,
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    json: true,
-    //key: this.fs.readFileSync('./bankid-test.key.pem'),
-    //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
-    passphrase: 'qwerty123',
-    rejectUnauthorized: false,
-    resolveWithFullResponse: true,
-    timeout: 5000,   
-}
+//   const options = {
+//     hostname: `appapi2.test.bankid.com`,
+//     port: 443,
+//     method: 'POST',
+//     path: `/?autostarttoken=[${bId.autoStartToken}]&redirect=null`,
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     json: true,
+//     //key: this.fs.readFileSync('./bankid-test.key.pem'),
+//     //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
+//     passphrase: 'qwerty123',
+//     rejectUnauthorized: false,
+//     resolveWithFullResponse: true,
+//     timeout: 5000,   
+// }
 
-  //const options = new URL(`https://appapi2.test.bankid.com/?autostarttoken=[${bId.autoStartToken}]&redirect=null`);
+  const sameDeviceURL = new URL(`https://demo.bankid.com//?autostarttoken=[${bId.autoStartToken}]&redirect=http://localhost:3001/home`);
 
-  res.send(options.href)
+  res.redirect(sameDeviceURL) 
   
 })
 
@@ -237,7 +237,7 @@ app.post('/signdocs', upload.single('upload'), async (req, res) => {
 
     try{
       const token = await pdfDocs.save()
-        res.status(201).send('Uploaded successfully')
+        res.status(201).redirect('/authqrcode') 
     }catch(e) {
         res.status(400).send(e) 
     }

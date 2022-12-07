@@ -5,14 +5,14 @@ const https = require('https')
 const crypto = require('crypto');
 var qrimg = require('qr-image'); 
 const path = require("path");
-const publicIp = require('public-ip');
-const isIp = require('is-ip');
+//const publicIp = require('public-ip');
+//const isIp = require('is-ip');
 const bankId = require('./bankIdClass.js')
 const QRCode = require('qrcode');
-//var pdfjsLib = require("pdfjs");
-var pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
-const swaggerUi = require('swagger-ui-express')
-const swaggerFile = require('./swagger_output.json')
+var pdfjsLib = require("pdfjs");
+//var pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
+//const swaggerUi = require('swagger-ui-express')
+//const swaggerFile = require('./swagger_output.json')
 
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
@@ -21,26 +21,6 @@ app.use('/images', express.static('images'));
 
 let bId = new bankId(fs, https, pdfjsLib);
 
-function checkipaddress(){
-  (async () => {
-    //if IPV4 only
-    if(isIp.v4(await publicIp.v4())){
-      console.log("Your public IPV4 Adress is: "+await publicIp.v4());
-      //if IPV4 and IPV6 both
-      if(isIp.v6(await publicIp.v6())){
-        console.log("Your public IPV6 Adress is: "+await publicIp.v6());
-        console.log("You have both IPV4 and IPV6");
-      }
-    }
-    //if IPV6 only
-    else if(isIp.v6(await publicIp.v6())){
-      console.log("Your public IPV6 Adress is: "+await publicIp.v6());
-    }
-    else{
-      console.log("Neither IPV4 nor IP6 found!");
-    }
-  })();
-} 
 
 function checkURI(q){
   if(!q.query){
@@ -96,7 +76,7 @@ app.get('/authqrcode', async (req, res) => {
   console.log("generated sign qrimage is " + bId.generatedQrCode);
 
   var code = qrimg.image(bId.generatedQrCode, { type: 'png', size: 15 });
-  res.render("qrcode", {qrImg: bId.generatedQrCode, orderStatus:bId.orderStat}); // qrcode refers to qrcode.ejs
+  res.render("perno-status", {qrImg: bId.generatedQrCode, orderStatus:bId.orderStat}); // qrcode refers to qrcode.ejs
 })
 
 async function doPostToDoItem(data, options) {
@@ -226,6 +206,6 @@ app.listen(3000, () => {
   console.log("server started on port 3000");
 });
 
-app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+// app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
-require('./endpoints')(app)
+// require('./endpoints')(app)
