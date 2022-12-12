@@ -32,7 +32,7 @@ async function createPDF() {
     lineHeight: 10,
   });
 
-  writeFileSync("pdfFiles/jane-doe.pdf", await document.save());
+  writeFileSync("pdfFiles/modified.pdf", await document.save());
 }
 
 createPDF().catch((err) => console.log(err));
