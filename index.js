@@ -1,9 +1,9 @@
 const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
-const { writeFileSync } = require("fs");
+const { writeFileSync, readFileSync } = require("fs");
 
 async function createPDF() {
   const document = await PDFDocument.create();
-  const courierBoldFont = await document.embedFont(StandardFonts.Courier);
+  const courierBoldFont = await document.embedFont(StandardFonts.Helvetica);
   const page = document.addPage([300, 400]);
   //const fontType = await document.embedFont(StandardFonts.Helvetica);
 
@@ -26,23 +26,30 @@ async function createPDF() {
         //lineHeight: 10,
     });
     
-    const text = `006-0023_4 rum och kök_Hyresavtal Bostad E-` +
-    `SIGNERING.pdf `;
-    const textSize = 6;
-    const textWidth = courierBoldFont.widthOfTextAtSize(text, textSize);
+    //const text = '006-0023_4 rum och kök_Hyresavtal Bostad E-SIGNERING.pdf';
+    const textSize = 5;
+    //const textWidth = courierBoldFont.widthOfTextAtSize(text, textSize);
     const textHeight = courierBoldFont.heightAtSize(textSize);
-    page.drawText(text, {
-        x:10,
-        y:280,
+    page.moveTo(15, 340)
+    page.drawText('2006-0023_4 rum och kök_Hyresavtal Bostad E-\nSIGNERING.pdf', {
         size: textSize,
         font: courierBoldFont,
         color: rgb(0, 0, 0),
+        lineHeight: 6,
     })
+    page.moveTo(15, 328)
+    page.drawText('Huvuddokument\n5 sidor\nStartades 2021-08-04 08:03:46 CEST(+0200) av AB\nVäsbyhem eSignering(AVe)\nFärdigställt 2021-08-04 08:16:30 CEST(+0200)', {
+        size: textSize,
+        font: courierBoldFont,
+        color: rgb(0, 0, 0),
+        lineHeight: 6,
+    })
+    page.moveTo(10, 300)
     page.drawRectangle({
-        x:10,
-        y:280,
-        width:textWidth,
-        height:textHeight+textSize,
+        // x:10,
+        // y:340,
+        width:130,
+        height:50,
         borderColor: rgb(0,0,0),
         borderWidth:0.5,
         padding:5
@@ -55,7 +62,7 @@ async function createPDF() {
         end: {x:100, y:10}
     })
     page.drawText('Transaktion 12345678900965438721', { 
-        x: 102,
+        x: 108,
         y: 9,
         size:5,
         font:courierBoldFont
