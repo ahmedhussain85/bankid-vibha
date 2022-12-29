@@ -30,26 +30,81 @@ async function createPDF() {
     const textSize = 5;
     //const textWidth = courierBoldFont.widthOfTextAtSize(text, textSize);
     const textHeight = courierBoldFont.heightAtSize(textSize);
-    page.moveTo(15, 340)
+    page.moveTo(15, 345)
     page.drawText('2006-0023_4 rum och kök_Hyresavtal Bostad E-\nSIGNERING.pdf', {
         size: textSize,
         font: courierBoldFont,
         color: rgb(0, 0, 0),
         lineHeight: 6,
     })
-    page.moveTo(15, 328)
+    page.moveTo(15, 333)
     page.drawText('Huvuddokument\n5 sidor\nStartades 2021-08-04 08:03:46 CEST(+0200) av AB\nVäsbyhem eSignering(AVe)\nFärdigställt 2021-08-04 08:16:30 CEST(+0200)', {
         size: textSize,
         font: courierBoldFont,
         color: rgb(0, 0, 0),
         lineHeight: 6,
     })
-    page.moveTo(10, 300)
+    page.moveTo(10, 305)
     page.drawRectangle({
         // x:10,
         // y:340,
         width:130,
         height:50,
+        borderColor: rgb(0,0,0),
+        borderWidth:0.5,
+        padding:5
+        //lineHeight: 10,
+    });
+    page.moveTo(10,295)
+    page.drawText('Initierare', {
+        font: courierBoldFont,
+        size: 8,
+        //lineHeight: 10,
+    });
+    page.moveTo(15, 280)
+    page.drawText('AB Väsbyhem eSignering(AVe)', {
+        size: textSize,
+        font: courierBoldFont,
+        color: rgb(0, 0, 0),
+        lineHeight: 6,
+    })
+    page.moveTo(15, 274)
+    page.drawText('AB Väsbyhem\nOrg. nr 556476-7233\nuthyrningen@vasbyhem.se', {
+        size: textSize,
+        font: courierBoldFont,
+        color: rgb(0, 0, 0),
+        lineHeight: 6,
+    })
+    page.moveTo(10, 257)
+    page.drawRectangle({
+        // x:10,
+        // y:340,
+        width:130,
+        height:33 ,
+        borderColor: rgb(0,0,0),
+        borderWidth:0.5,
+        padding:5
+        //lineHeight: 10,
+    });
+    page.moveTo(10,247)
+    page.drawText('Signerande parter', {
+        font: courierBoldFont,
+        size: 8,
+        //lineHeight: 10,
+    });
+    page.moveTo(15, 232)
+    page.drawText('AB Väsbyhem eSignering(AVe)', {
+        size: textSize,
+        font: courierBoldFont,
+        color: rgb(0, 0, 0),
+        lineHeight: 6,
+    })
+    page.moveTo(10, 207)
+    page.drawRectangle({
+        // x:10,
+        // y:340,
+        width:130,
+        height:35,
         borderColor: rgb(0,0,0),
         borderWidth:0.5,
         padding:5
