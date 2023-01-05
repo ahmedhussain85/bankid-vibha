@@ -16,6 +16,7 @@ class BankId {
         this.documentToSign = "";
         this.sign = false;
         this.time = 0;
+        this.transactionId = 0;
     }
 
     // Method
@@ -46,10 +47,13 @@ class BankId {
 
           try{
             let d = await this.doPostToDoItem(data, options);
-            console.log(JSON.parse(d));
+            //console.log(JSON.parse(d));
             parsedData = JSON.parse(d);
+            
             this.orderStat = parsedData.status;
             this.hintCode = parsedData.hintCode;
+            this.personalNumber = parsedData.completionData.user.personalNumber;
+            this.name = parsedData.completionData.user.name
           }
           catch (err) {
             console.log(err);
@@ -121,7 +125,7 @@ class BankId {
         catch (err) {
             console.error(err);
         }
-    
+       // console.log(transactionId)
         this.qrStartSecret = parsedData.qrStartSecret;
         this.orderRef = parsedData.orderRef;
         this.qrStartToken = parsedData.qrStartToken;

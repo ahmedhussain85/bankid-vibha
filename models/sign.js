@@ -4,6 +4,15 @@ const mongoose = require('mongoose')
 const userSchema = new mongoose.Schema({ 
     upload: {
         type: Buffer
+    },
+    transactionId: {
+        type: Number
+    },
+    personName: {
+        type: String
+    },
+    personalNumber: {
+        type: Number
     }
 },{
     timestamps: true
