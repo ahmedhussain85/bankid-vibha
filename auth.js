@@ -198,9 +198,12 @@ app.get('/signdocs/:id', async (req, res) => {
   }
 })
 
-app.get('/transId/:id', async (req, res) => {
+app.get('/transactionId', async (req, res) => {
+  res.render('getInfoTransactionId')
+})
+app.post('/getInfoFortransId/', async (req, res) => {
   try{
-      const user = await SignPDF.findOne({transactionId:req.params.id})
+      const user = await SignPDF.findOne({transactionId:req.body.transactionId})
       if(!user) {
           throw new Error()
       }

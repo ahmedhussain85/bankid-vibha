@@ -18,6 +18,20 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 })
 
+userSchema.methods.toJSON = function(){
+    const user = this
+    const userObject = user.toObject()
+
+    delete userObject.transactionId
+    delete userObject.upload
+    delete userObject._id
+    delete userObject.createdAt
+    delete userObject.updatedAt
+    delete userObject.__v
+
+    return userObject
+}
+
 const SignPDF = mongoose.model('SignPDF', userSchema)
 
 module.exports = SignPDF
