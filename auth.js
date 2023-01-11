@@ -148,7 +148,7 @@ var upload = multer({
 
 app.post('/signdocs', upload.single('upload'), async (req, res) => {
   transactionId = generateUniqueId({
-    length: 20,
+    length: 15,
     useLetters: false
   });
   const buffer = req.file.buffer
@@ -202,14 +202,18 @@ app.get('/transactionId', async (req, res) => {
   res.render('getInfoTransactionId')
 })
 app.post('/getInfoFortransId/', async (req, res) => {
+  const transactionId = req.body.transactionId
+  if(!transactionId){
+    return res.send("Please Enter Transaction Id")
+  }
   try{
-      const user = await SignPDF.findOne({transactionId:req.body.transactionId})
+      const user = await SignPDF.findOne({transactionId:transactionId})
       if(!user) {
           throw new Error()
       }
       res.send(user)
   } catch(e) {
-      res.status(404).send()
+      res.status(404).send(e)
   }
 })
 
