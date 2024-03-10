@@ -22,7 +22,8 @@ const port = process.env.PORT || 3001
 const userIp = ip.address()
 
 app.get('/', (req, res) => {
-    res.send('Hello')
+    //res.send('Hello')
+    res.render('index')
   })
 
 app.get('/auth', async (req, res) => {
@@ -42,7 +43,7 @@ app.get('/auth', async (req, res) => {
       'Content-Length': data.length
     },
     json: true, 
-    pfx: fs.readFileSync('./FPTestcert4_20220818.p12'),
+    pfx: fs.readFileSync('./FPTestcert4_20230629.p12'),
     passphrase: 'qwerty123',
     rejectUnauthorized: false,
     resolveWithFullResponse: true,

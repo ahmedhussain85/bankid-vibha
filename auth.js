@@ -12,7 +12,7 @@ const crypto = require('crypto');
 
 const SignPDF = require('./models/sign')
 const multer = require('multer')
-const sharp = require('sharp')
+//const sharp = require('sharp')
 require('./db/mongoose')
 const generateUniqueId = require('generate-unique-id');
 
