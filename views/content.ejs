@@ -1,25 +1,15 @@
 <div class="login-form">
-  <form method='post' action='/signdocs' enctype="multipart/form-data">
-    <input type='file' name='upload' id="upload" placeholder="Upload Document">
-    <input type='submit'>
-  </form> 
+  <form action="/login" method="post">
+    <div class="form-control">
+      <label for="name">Login</label>      
+    </div>
+    <div class="form-control">      
+      <label ><a href="/uploadfile">Upload File to Sign</a></label>
+      <label for="password"><a href="/authqrcode">BankID on another device</a></label>
+      <label ><a href="/ssn">BankID with social security Number</a></label>
+      <label ><a href="/onsamedevice">BankID on this device</a></label>
+    </div>        
+  </form>     
 </div>
-<div class="login-form">
-    <form action="/login" method="post">
-      <div class="form-control">
-        <label for="name">Login</label>
-        
-      </div>
-      <div class="form-control">
-       
-        <label for="password"><a href="/authqrcode">BankId on another device</a></label>
-        <label ><a href="/privetnumber">BankId with social security Number</a></label>
-        <label ><a href="/onsamedevice">BankId on this device</a></label>
-      </div>
-          
-    </form> 
-    
-    
-  </div>
   
  

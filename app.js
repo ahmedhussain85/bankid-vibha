@@ -15,6 +15,8 @@ const app = express()
 app.use(express.json())
 app.set("view engine", "ejs");
 
+const bodyParser = require('body-parser');
+app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, "public")));
 app.use('/images', express.static('images'));
 let bId = new bankId(fs, https, pdfjsLib);
@@ -32,18 +34,23 @@ app.get('/ssn', async (req, res) => {
   res.render('ssn')
 })
 
+app.get('/uploadfile', (req, res) => {
+  res.render('uploadfile')
+})
+
+
 app.post('/signqrcode', async (req, res) => {
   checkURI(req);  
   //checkipaddress();
   bId.time = 0;
   bId.sign = true;
-  
-  const ssn = req.body.ssn
+  console.log(req.body.ssn);
+  const ssn = req.body.ssn;
   if(!ssn){
     return res.send("Please Enter social security number")
   }
   bId.documentToSign = "Bolagsverket.pdf";
-  await bId.signQr(personalNumber);
+  await bId.signQr(ssn);
   await bId.orderStatus();
   
   var qrStartSecret = bId.qrStartSecret;
