@@ -67,8 +67,10 @@ app.get('/home', async (req, res) => {
   res.render("qrcode", {qrImg: bId.generatedQrCode, orderStatus: bId.orderStat}); // qrcode refers to qrcode.ejs
   
 })
-app.get('/privetnumber', async (req, res) => {
-  res.render('personalnumber')
+
+//Bank ID using Social Security Number (personnummer in Sweden)
+app.get('/ssn', async (req, res) => {
+  res.render('ssn')
 })
 
 app.post('/signqrcode', async (req, res) => {

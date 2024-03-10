@@ -9,6 +9,7 @@ const bankId = require('./bankIdClass.js')
 const path = require("path");
 const pdfjsLib = require("pdfjs");
 const crypto = require('crypto');
+const multer = require('multer')
 
 const app = express()
 app.use(express.json())
@@ -25,6 +26,68 @@ app.get('/', (req, res) => {
     //res.send('Hello')
     res.render('index')
   })
+
+//Bank ID using Social Security Number (personnummer in Sweden)  
+app.get('/ssn', async (req, res) => {
+  res.render('ssn')
+})
+
+app.post('/signqrcode', async (req, res) => {
+  checkURI(req);  
+  //checkipaddress();
+  bId.time = 0;
+  bId.sign = true;
+  
+  const ssn = req.body.ssn
+  if(!ssn){
+    return res.send("Please Enter social security number")
+  }
+  bId.documentToSign = "Bolagsverket.pdf";
+  await bId.signQr(personalNumber);
+  await bId.orderStatus();
+  
+  var qrStartSecret = bId.qrStartSecret;
+
+  var qrgeneratedcode = "bankid." + bId.qrStartToken + "." + bId.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bId.time.toString()).digest('hex');
+  bId.generatedQrCode = qrgeneratedcode;
+  
+  res.render("ssn-status", {qrImg: bId.generatedQrCode, orderStatus:bId.orderStat}); // qrcode refers to qrcode.ejs
+})
+
+
+app.get('/onsamedevice', async (req, res) => {
+  checkURI(req);  
+  //checkipaddress();
+  bId.time = 0;
+  bId.sign = true;
+  
+  await bId.authQr();
+  await bId.orderStatus();
+  console.log(bId.autoStartToken)
+  
+  const sameDeviceURL = new URL(`https://demo.bankid.com//?autostarttoken=[${bId.autoStartToken}]&redirect=http://localhost:3001/home`);
+
+  res.redirect(sameDeviceURL) 
+  
+})
+
+
+ const storage = multer.memoryStorage()
+
+var upload = multer({ 
+  limits: {
+    fileSize: 1000000
+  },
+  fileFilter(req, file, cb) {
+    if(!file.originalname.endsWith('.pdf')) {
+      return cb(new Error('Please upload a PDF file only!'))
+    }
+
+    cb(undefined, true)
+  }
+
+});
+
 
 app.get('/auth', async (req, res) => {
   const data = JSON.stringify({
