@@ -1,0 +1,19 @@
+<h2>Login using QR Code</h2>
+<!-- Add your demo content here -->
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script type="text/javascript" src="qrcodejs-master/qrcode.min.js"></script>
+</head>
+
+<meta name="csrf-token" content="{{ csrf_token() }}" />
+
+<script>
+    var qrIm = "<%= qrImg %>";
+    var orderStatus = "<%= orderStatus %>";
+    console.log("qrImg is " + qrIm);
+</script>
+
+<!--Added from footer.ejs but code seem to work without it too!-->
+<div id="qrcode" class ="container"></div>
+<script src="/js/script.js"></script>

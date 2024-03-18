@@ -36,7 +36,7 @@ class BankId {
               'Content-Length': data.length
             },
             json: true,
-            pfx: this.fs.readFileSync('./FPTestcert4_20220818.p12'),
+            pfx: this.fs.readFileSync('./FPTestcert4_20230629.p12'),
             //key: this.fs.readFileSync('./bankid-test.key.pem'),
             //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
             passphrase: 'qwerty123',
@@ -47,13 +47,13 @@ class BankId {
 
           try{
             let d = await this.doPostToDoItem(data, options);
-            console.log(JSON.parse(d));
+            //console.log(JSON.parse(d));
             parsedData = JSON.parse(d);
             
             this.orderStat = parsedData.status;
             this.hintCode = parsedData.hintCode;
-            this.personalNumber = parsedData.completionData.user.personalNumber;
-            this.name = parsedData.completionData.user.name
+            //this.personalNumber = parsedData.completionData.user.personalNumber;
+            //this.name = parsedData.completionData.user.name
           }
           catch (err) {
             console.log(err);
@@ -76,7 +76,7 @@ class BankId {
                 'Content-Length': data.length
             },
             json: true,
-            pfx: this.fs.readFileSync('./FPTestcert4_20220818.p12'),
+            pfx: this.fs.readFileSync('./FPTestcert4_20230629.p12'),
             //key: this.fs.readFileSync('./bankid-test.key.pem'),
             //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
             passphrase: 'qwerty123',

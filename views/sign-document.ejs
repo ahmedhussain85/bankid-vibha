@@ -1,0 +1,10 @@
+<h2>Sign Document using BankID</h2>
+<!-- Add your demo content here -->
+<%- include('header.ejs') %>
+<div class="login-form">
+    <form method='post' action='/signdocs' enctype="multipart/form-data">
+      <input type='file' name='upload' id="upload" placeholder="Upload Document">
+      <input type='submit'>
+    </form> 
+</div>
+<%- include('footer.ejs') %>

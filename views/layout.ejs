@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="css/styles1.css"> <!-- Assuming your CSS file is served statically -->
+</head>
+<body style="min-height: 100vh; display: flex; flex-direction: column;">
+  <header>
+    <h1>Welcome to Paylego AB</h1>
+    <p>Stockholm, Sweden</p>
+  </header>  
+  <div class="container">
+    <h2>List of options</h2>
+    <nav>
+    <ul class="myUL">
+      <li><a href="#login-ssn">BankID Login using SSN (Personnummer)</a></li>
+      <li><a href="#login-qr">BankID Login using QR Code</a></li>
+      <li><a href="#login-same-device">BankID Login using Same Device</a></li>
+      <li><a href="#login-different-device">BankID Login using Another Device</a></li>
+      <li><a href="#sign-document">Sign Document using BankID</a></li>
+    </ul>
+    </nav>
+  </div>
+
+  <main id="main-content" class="center">
+    <!-- Content will be dynamically loaded here -->
+  </main>
+
+  <div style="flex-grow:1"></div>
+  <!-- Any content below this will always be at bottom. -->
+
+  <footer>
+    <p>&copy; 2024 Paylego AB. All rights reserved.</p>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="js/script1.js"></script> <!-- Assuming your JavaScript file is served statically -->
+</body>
+</html>

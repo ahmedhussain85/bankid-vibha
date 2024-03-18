@@ -3,7 +3,7 @@
 console.log("This is coming from script.js");
 
 var qrGeneratedCode = qrIm;
-let loginStatus = '';
+var loginStatus = '';
 //let hintCode = "outstandingTransaction";
 var orderStat = orderStatus;
 var hint = "outstandingTransaction";

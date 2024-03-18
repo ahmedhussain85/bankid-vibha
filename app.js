@@ -19,15 +19,43 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, "public")));
 app.use('/images', express.static('images'));
-let bId = new bankId(fs, https, pdfjsLib);
+let bid = new bankId(fs, https, pdfjsLib);
 
 const port = process.env.PORT || 3001
 const userIp = ip.address()
 
+// Define a route to render layout.ejs
 app.get('/', (req, res) => {
     //res.send('Hello')
-    res.render('index')
+    //res.render('index')
+    res.render('layout', { title: 'Paylego AB - BankID Demo' });
   })
+
+// Define a route to render login-ssn.ejs
+app.get('/login-ssn', (req, res) => {
+  res.render('login-ssn', { title: 'BankID Login using SSN (Personnummer)' });
+});
+
+// Define a route to render login-qr.ejs
+app.get('/login-qr', (req, res) => {
+  loginqrfunc(req);
+  res.render('login-qr', { title: 'BankID Login using QR Code', qrImg: bid.generatedQrCode, orderStatus: bid.orderStat});
+});
+
+// Define a route to render login-same-device.ejs
+app.get('/login-same-device', (req, res) => {
+  res.render('login-same-device', { title: 'BankID Login using Same Device' });
+});
+
+// Define a route to render login-different-device.ejs
+app.get('/login-different-device', (req, res) => {
+  res.render('login-different-device', { title: 'BankID Login using Different Device' });
+});
+
+// Define a route to render sign-document.ejs
+app.get('/sign-document', (req, res) => {
+  res.render('sign-document', { title: 'Sign Document using BankID' });
+});
 
 //Bank ID using Social Security Number (personnummer in Sweden)  
 app.get('/ssn', async (req, res) => {
@@ -42,37 +70,37 @@ app.get('/uploadfile', (req, res) => {
 app.post('/signqrcode', async (req, res) => {
   checkURI(req);  
   //checkipaddress();
-  bId.time = 0;
-  bId.sign = true;
+  bid.time = 0;
+  bid.sign = true;
   console.log(req.body.ssn);
   const ssn = req.body.ssn;
   if(!ssn){
     return res.send("Please Enter social security number")
   }
-  bId.documentToSign = "Bolagsverket.pdf";
-  await bId.signQr(ssn);
-  await bId.orderStatus();
+  bid.documentToSign = "Bolagsverket.pdf";
+  await bid.signQr(ssn);
+  await bid.orderStatus();
   
-  var qrStartSecret = bId.qrStartSecret;
+  var qrStartSecret = bid.qrStartSecret;
 
-  var qrgeneratedcode = "bankid." + bId.qrStartToken + "." + bId.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bId.time.toString()).digest('hex');
-  bId.generatedQrCode = qrgeneratedcode;
+  var qrgeneratedcode = "bankid." + bid.qrStartToken + "." + bid.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bid.time.toString()).digest('hex');
+  bid.generatedQrCode = qrgeneratedcode;
   
-  res.render("ssn-status", {qrImg: bId.generatedQrCode, orderStatus:bId.orderStat}); // qrcode refers to qrcode.ejs
+  res.render("ssn-status", {qrImg: bid.generatedQrCode, orderStatus:bid.orderStat}); // qrcode refers to qrcode.ejs
 })
 
 
 app.get('/onsamedevice', async (req, res) => {
   checkURI(req);  
   //checkipaddress();
-  bId.time = 0;
-  bId.sign = true;
+  bid.time = 0;
+  bid.sign = true;
   
-  await bId.authQr();
-  await bId.orderStatus();
-  console.log(bId.autoStartToken)
+  await bid.authQr();
+  await bid.orderStatus();
+  console.log(bid.autoStartToken)
   
-  const sameDeviceURL = new URL(`https://demo.bankid.com//?autostarttoken=[${bId.autoStartToken}]&redirect=http://localhost:3001/home`);
+  const sameDeviceURL = new URL(`https://demo.bankid.com//?autostarttoken=[${bid.autoStartToken}]&redirect=http://localhost:3001/home`);
 
   res.redirect(sameDeviceURL) 
   
@@ -125,7 +153,7 @@ app.get('/auth', async (req, res) => {
         parsedData = JSON.parse(d);
 
   let orderStatus = await orderStatusCollect(parsedData.orderRef)
-  console.log(orderStatus.status)
+  //console.log(orderStatus.status)
   
   var qrgeneratedcode = "bankid." + parsedData.qrStartToken + "." + 1 + "." + parsedData.qrStartSecret;
   let stringdata = JSON.stringify(qrgeneratedcode)
@@ -193,7 +221,7 @@ const orderStatusCollect = async (orderRef) => {
         'Content-Length': data.length
       },
       json: true,
-      pfx: fs.readFileSync('./FPTestcert4_20220818.p12'),
+      pfx: fs.readFileSync('./FPTestcert4_20230629.p12'),
       //key: this.fs.readFileSync('./bankid-test.key.pem'),
       //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
       passphrase: 'qwerty123',
@@ -219,30 +247,33 @@ function checkURI(q){
     console.log("NO PARAMS PASSED");
   }
   else{
+    console.log("checkURI function start");
     console.log("[orderRef] Input param is: "+q.query.orderRef);
     console.log("[startTime] Input param is: "+q.query.startTime);
     console.log("[qrStartSecret] Input param is: "+q.query.qrStartSecret);
+    console.log(q.body);
+    console.log("checkURI function stop");
   }
 }
- //QR Code Call
- app.get('/authqrcode', async (req, res) => {
+
+//QR Code Call
+async function loginqrfunc(req){
   checkURI(req);  
   //checkipaddress();
 
-  bId.time = 0;
-  bId.sign = false;
+  bid.time = 0;
+  bid.sign = false;
 
-  await bId.authQr();
+  await bid.authQr();
+  await bid.orderStatus();
 
-  await bId.orderStatus();
+  var qrStartSecret = bid.qrStartSecret;
 
-  var qrStartSecret = bId.qrStartSecret;
+  var qrgeneratedcode = "bankid." + bid.qrStartToken + "." + bid.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bid.time.toString()).digest('hex');
+  bid.generatedQrCode = qrgeneratedcode;
 
-  var qrgeneratedcode = "bankid." + bId.qrStartToken + "." + bId.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bId.time.toString()).digest('hex');
-  bId.generatedQrCode = qrgeneratedcode;
-  console.log("generated qrimage is " + bId.generatedQrCode);
-  res.render("qrcode", {qrImg: bId.generatedQrCode, orderStatus: bId.orderStat}); // qrcode refers to qrcode.ejs
-})
+  console.log("generated qrimage is " + bid.generatedQrCode);
+}
 
 app.get('/ajaxcall/', async (req, res) => {
   checkURI(req);  
@@ -250,76 +281,76 @@ app.get('/ajaxcall/', async (req, res) => {
 
   let startCode = req.params.qrstartcode;
 
-  await bId.orderStatus();
-  if(bId.orderStat == "complete")
+  await bid.orderStatus();
+  if(bid.orderStat == "complete")
   {
     console.log("Order Complete");
   }
-  else if (bId.orderStat == "failed")
+  else if (bid.orderStat == "failed")
   {
-    bId.time = 0;
-    bId.cancel();
-    if(bId.sign == true)
+    bid.time = 0;
+    bid.cancel();
+    if(bid.sign == true)
     {
-      await bId.signQr();
+      await bid.signQr();
     }
     else
     {
-      await bId.authQr();
+      await bid.authQr();
     }
-    await bId.orderStatus();
-    startCode = bId.qrStartToken;
+    await bid.orderStatus();
+    startCode = bid.qrStartToken;
   }
-  else if (bId.time >= 27)
+  else if (bid.time >= 27)
   {
-    bId.time = 0;
-    bId.cancel();
-    if(bId.sign == true)
+    bid.time = 0;
+    bid.cancel();
+    if(bid.sign == true)
     {
-      await bId.signQr();
+      await bid.signQr();
     }
     else
     {
-      await bId.authQr();
+      await bid.authQr();
     }
-    await bId.orderStatus();
-    startCode = bId.qrStartToken;
+    await bid.orderStatus();
+    startCode = bid.qrStartToken;
   }
-  else if ((bId.time >=0) && (bId.time < 27))
+  else if ((bid.time >=0) && (bid.time < 27))
   {
-    await bId.orderStatus();
-    if (bId.orderStat == "failed")
+    await bid.orderStatus();
+    if (bid.orderStat == "failed")
     {
       time = 0;
-      bId.cancel();
-      if(bId.sign == true)
+      bid.cancel();
+      if(bid.sign == true)
       {
-        await bId.signQr();
+        await bid.signQr();
       }
       else
       {
-        await bId.authQr();
+        await bid.authQr();
       }
-      await bId.orderStatus();
-      startCode = bId.qrStartToken;
+      await bid.orderStatus();
+      startCode = bid.qrStartToken;
     }
-    if(bId.hintCode == "userSign")
+    if(bid.hintCode == "userSign")
     {
-      console.log("bId.orderStat is " + bId.orderStat);
-      console.log("bId.hintCode is " + bId.hintCode);
+      console.log("bid.orderStat is " + bid.orderStat);
+      console.log("bid.hintCode is " + bid.hintCode);
 
     }
     else
     {
-      bId.time = bId.time + 3;
+      bid.time = bid.time + 3;
     }
 
   }
 
-  var qrStartSecret = bId.qrStartSecret;
+  var qrStartSecret = bid.qrStartSecret;
 
-  bId.generatedQrCode = "bankid." + bId.qrStartToken + "." + bId.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bId.time.toString()).digest('hex');
-  res.json({qrImg: bId.generatedQrCode, orderStatus: bId.orderStat, hintCode: bId.hintCode});
+  bid.generatedQrCode = "bankid." + bid.qrStartToken + "." + bid.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bid.time.toString()).digest('hex');
+  res.json({qrImg: bid.generatedQrCode, orderStatus: bid.orderStat, hintCode: bid.hintCode});
 })
 
 app.listen(port, () => {
