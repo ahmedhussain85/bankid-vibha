@@ -29,7 +29,6 @@ const port = process.env.PORT || 3001
 const userIp = ip.address()
 global.transactionId = 0 ;
 
-
 function checkURI(q){
   if(!q.query){
     console.log("NO PARAMS PASSED");
@@ -220,7 +219,7 @@ app.post('/getInfoFortransId/', async (req, res) => {
 })
 
 app.get('/ajaxcall/', async (req, res) => {
-  checkURI(req);  
+  checkURI(req);
   //checkipaddress();
 
   let startCode = req.params.qrstartcode;

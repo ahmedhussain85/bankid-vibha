@@ -24,6 +24,8 @@ let bid = new bankId(fs, https, pdfjsLib);
 const port = process.env.PORT || 3001
 const userIp = ip.address()
 
+app.use(bodyParser.urlencoded({ extended: true }));
+
 // Define a route to render layout.ejs
 app.get('/', (req, res) => {
     //res.send('Hello')
@@ -72,8 +74,10 @@ app.post('/signqrcode', async (req, res) => {
   //checkipaddress();
   bid.time = 0;
   bid.sign = true;
-  console.log(req.body.ssn);
+  console.log(req.body);
   const ssn = req.body.ssn;
+  //const ssn = "198601084851";
+
   if(!ssn){
     return res.send("Please Enter social security number")
   }
