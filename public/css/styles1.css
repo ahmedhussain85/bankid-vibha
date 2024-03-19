@@ -56,7 +56,7 @@ html, body, header, nav, main, footer {
   .center {
     border: 5px solid;
     margin: auto;
-    width: 50%;
+    width: max-content;
     padding: 10px;
     text-align: center;
   }
