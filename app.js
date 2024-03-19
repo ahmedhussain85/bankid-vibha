@@ -76,7 +76,6 @@ app.post('/signqrcode', async (req, res) => {
   bid.sign = true;
   console.log(req.body);
   const ssn = req.body.ssn;
-  //const ssn = "198601084851";
 
   if(!ssn){
     return res.send("Please Enter social security number")
