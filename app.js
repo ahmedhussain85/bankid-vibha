@@ -93,6 +93,28 @@ app.post('/signqrcode', async (req, res) => {
 })
 
 
+app.post('/authssn', async (req, res) => {
+  checkURI(req);  
+  //checkipaddress();
+  bid.time = 0;
+  bid.sign = true;
+  console.log(req.body);
+  const ssn = req.body.ssn;
+
+  if(!ssn){
+    return res.send("Please Enter social security number")
+  }
+  await bid.auth(ssn);
+  await bid.orderStatus();
+  
+  var qrStartSecret = bid.qrStartSecret;
+
+  var qrgeneratedcode = "bankid." + bid.qrStartToken + "." + bid.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bid.time.toString()).digest('hex');
+  bid.generatedQrCode = qrgeneratedcode;
+  
+  res.render("ssn-status", {qrImg: bid.generatedQrCode, orderStatus:bid.orderStat}); // qrcode refers to qrcode.ejs
+})
+
 app.get('/onsamedevice', async (req, res) => {
   checkURI(req);  
   //checkipaddress();
@@ -150,7 +172,7 @@ app.get('/auth', async (req, res) => {
     resolveWithFullResponse: true,
     timeout: 5000,
   }
- 
+
   let d = await getDetailsForCollect(data, options);
         //console.log(d);
         parsedData = JSON.parse(d);

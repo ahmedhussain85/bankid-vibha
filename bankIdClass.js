@@ -24,28 +24,28 @@ class BankId {
         var parsedData;
         const data = JSON.stringify({
             orderRef       : this.orderRef,
-          })
-          
-          const options = {
+        })
+        
+        const options = {
             hostname: 'appapi2.test.bankid.com',
             port: 443,
             path: '/rp/v5.1/collect',
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
-              'Content-Length': data.length
+            'Content-Type': 'application/json',
+            'Content-Length': data.length
             },
             json: true,
             pfx: this.fs.readFileSync('./FPTestcert4_20230629.p12'),
             //key: this.fs.readFileSync('./bankid-test.key.pem'),
-            //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
+            //cert: this.fs.readFileSync('./bankid-test.crt.pem'),
             passphrase: 'qwerty123',
             rejectUnauthorized: false,
             resolveWithFullResponse: true,
             timeout: 5000,
-          }
+        }
 
-          try{
+        try{
             let d = await this.doPostToDoItem(data, options);
             //console.log(JSON.parse(d));
             parsedData = JSON.parse(d);
@@ -54,10 +54,10 @@ class BankId {
             this.hintCode = parsedData.hintCode;
             //this.personalNumber = parsedData.completionData.user.personalNumber;
             //this.name = parsedData.completionData.user.name
-          }
-          catch (err) {
+        }
+        catch (err) {
             console.log(err);
-          }
+        }
     }
 
     // Method
@@ -78,7 +78,7 @@ class BankId {
             json: true,
             pfx: this.fs.readFileSync('./FPTestcert4_20230629.p12'),
             //key: this.fs.readFileSync('./bankid-test.key.pem'),
-            //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
+            //cert: this.fs.readFileSync('./bankid-test.crt.pem'),
             passphrase: 'qwerty123',
             rejectUnauthorized: false,
             resolveWithFullResponse: true,
@@ -90,30 +90,75 @@ class BankId {
         console.log("Order cancelled");
     }
 
-    async authQr()
+    async auth(prno)
     {
         var parsedData;
         const data = JSON.stringify({
             endUserIp       : "83.254.22.249",
             requirement     : {"allowFingerprint": true},
-          })
+        })
         const options = {
             hostname: 'appapi2.test.bankid.com',
             port: 443,
             path: '/rp/v5.1/auth',
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
-              'Content-Length': data.length
+            'Content-Type': 'application/json',
+            'Content-Length': data.length
             },
             json: true,
             pfx: this.fs.readFileSync('./FPTestcert4_20230629.p12'),
             //key: this.fs.readFileSync('./bankid-test.key.pem'),
-            //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
+            //cert: this.fs.readFileSync('./bankid-test.crt.pem'),
             passphrase: 'qwerty123',
             rejectUnauthorized: false,
             resolveWithFullResponse: true,
-            timeout: 5000,   
+            timeout: 5000,
+        }
+        try{
+            let d = await this.doPostToDoItem(data, options);
+            parsedData = JSON.parse(d);
+
+            console.log(d);
+
+        }
+        catch (err) {
+            console.error(err);
+        }
+       // console.log(transactionId)
+        this.qrStartSecret = parsedData.qrStartSecret;
+        this.orderRef = parsedData.orderRef;
+        this.qrStartToken = parsedData.qrStartToken;
+        this.autoStartToken = parsedData.autoStartToken
+        
+    }
+
+
+    async authQr()
+    {
+        var parsedData;
+        const data = JSON.stringify({
+            endUserIp       : "83.254.22.249",
+            personalNumber  :   prno,
+            requirement     : {"allowFingerprint": true},
+        })
+        const options = {
+            hostname: 'appapi2.test.bankid.com',
+            port: 443,
+            path: '/rp/v5.1/auth',
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': data.length
+            },
+            json: true,
+            pfx: this.fs.readFileSync('./FPTestcert4_20230629.p12'),
+            //key: this.fs.readFileSync('./bankid-test.key.pem'),
+            //cert: this.fs.readFileSync('./bankid-test.crt.pem'),
+            passphrase: 'qwerty123',
+            rejectUnauthorized: false,
+            resolveWithFullResponse: true,
+            timeout: 5000,
         }
         try{
             let d = await this.doPostToDoItem(data, options);
@@ -144,34 +189,33 @@ class BankId {
 
         // const fingerprints = await JSON.stringify(pdf.fingerprints.join(""));
         //console.log(fingerprints);
-      
         const data = JSON.stringify({
             personalNumber:prno,
             endUserIp: "83.254.22.249",
             requirement: { "allowFingerprint": true
-          },
-          userVisibleData: Buffer.from(message).toString('base64')
+        },
+        userVisibleData: Buffer.from(message).toString('base64')
           //userNonVisibleData: Buffer.from(fingerprints).toString('base64'),
         })
         console.log(data)
         
         const options = {
-          hostname: 'appapi2.test.bankid.com',
-          port: 443,
-          path: '/rp/v5.1/sign',
-          method: 'POST',
-          headers: {
+        hostname: 'appapi2.test.bankid.com',
+        port: 443,
+        path: '/rp/v5.1/sign',
+        method: 'POST',
+        headers: {
             'Content-Type': 'application/json',
             'Content-Length': data.length
-          },
-          json: true,
-          pfx: this.fs.readFileSync('./FPTestcert4_20230629.p12'),
+        },
+        json: true,
+        pfx: this.fs.readFileSync('./FPTestcert4_20230629.p12'),
           //key: this.fs.readFileSync('./bankid-test.key.pem'),
-          //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
-          passphrase: 'qwerty123',
-          rejectUnauthorized: false,
-          resolveWithFullResponse: true,
-          timeout: 5000,
+          //cert: this.fs.readFileSync('./bankid-test.crt.pem'),
+        passphrase: 'qwerty123',
+        rejectUnauthorized: false,
+        resolveWithFullResponse: true,
+        timeout: 5000,
         }
         let d = await this.doPostToDoItem(data, options);
         console.log(d);
@@ -189,24 +233,24 @@ class BankId {
         const data = JSON.stringify({
             endUserIp       : "83.254.22.249",
             requirement     : {"allowFingerprint": true},
-          })
+        })
         const options = {
             hostname: 'appapi2.test.bankid.com',
             port: 443,
             path: '/rp/v5.1/auth',
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
-              'Content-Length': data.length
+            'Content-Type': 'application/json',
+            'Content-Length': data.length
             },
             json: true,
             pfx: this.fs.readFileSync('./FPTestcert4_20230629.p12'),
             //key: this.fs.readFileSync('./bankid-test.key.pem'),
-            //cert: this.fs.readFileSync('./bankid-test.crt.pem'),  
+            //cert: this.fs.readFileSync('./bankid-test.crt.pem'),
             passphrase: 'qwerty123',
             rejectUnauthorized: false,
             resolveWithFullResponse: true,
-            timeout: 5000,   
+            timeout: 5000,
         }
         try{
             let d = await this.doPostToDoItem(data, options);
@@ -230,28 +274,27 @@ class BankId {
 
     async doPostToDoItem(data, options) {
         let responseBody = '';
-      
+    
         let p = new Promise((resolve, reject) => {
             const req = this.https.request(options, (res) => {
                 //res.setEncoding('utf8');
-      
                 res.on('data', (chunk) => {
                     responseBody += chunk;
                 });
-      
+    
                 res.on('end', () => {
                     resolve(JSON.parse(responseBody));
                 });
             });
-      
+    
             req.on('error', (err) => {
                 reject(err);
             });
-      
+    
             req.write(data)
             req.end();
         });
-      
+    
         await p;
         return responseBody;
     }
