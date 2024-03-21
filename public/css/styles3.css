@@ -1,0 +1,35 @@
+body {
+    background-color: #4d0000; /* dark red background */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .go-back-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #ff6666; /* light red text */
+    text-decoration: none;
+  }
+  
+  .failure-message {
+    color: #ff6666; /* light red text */
+    font-size: 3em; /* large size text */
+    text-align: center;
+  }
+  
+  .additional-message {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .additional-message p {
+    color: #ff6666; /* light red text */
+    font-size: 1.2em; /* small font size */
+  }
+  

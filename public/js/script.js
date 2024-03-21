@@ -32,7 +32,8 @@ var renew = setInterval(function(){
     else if(hint == "startFailed")
     {
         clearInterval(renew);
-        alert("Failed to log in with BankID!");
+        window.location.href= '/fail'
+        //alert("Failed to log in with BankID!");
     }
     else if (hint == "outstandingTransaction" || hint == "userSign")
     {

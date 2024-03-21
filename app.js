@@ -44,14 +44,14 @@ app.get('/login-qr', (req, res) => {
   res.render('login-qr', { title: 'BankID Login using QR Code', qrImg: bid.generatedQrCode, orderStatus: bid.orderStat});
 });
 
-// Define a route to render login-same-device.ejs
-app.get('/login-same-device', (req, res) => {
-  res.render('login-same-device', { title: 'BankID Login using Same Device' });
+// Define a route to render using-this-device.ejs
+app.get('/using-this-device', (req, res) => {
+  res.render('using-this-device', { title: 'Using This Device' });
 });
 
-// Define a route to render login-different-device.ejs
-app.get('/login-different-device', (req, res) => {
-  res.render('login-different-device', { title: 'BankID Login using Different Device' });
+// Define a route to render using-another-device.ejs
+app.get('/using-another-device', (req, res) => {
+  res.render('using-another-device', { title: 'Using Another Device' });
 });
 
 // Define a route to render sign-document.ejs
@@ -68,6 +68,9 @@ app.get('/success', (req, res) => {
   res.render('success');
 })
 
+app.get('/fail', (req, res) => {
+  res.render('fail');
+})
 
 app.post('/signqrcode', async (req, res) => {
   checkURI(req);  
