@@ -1,0 +1,34 @@
+body {
+  background-color: #004d00; /* dark green background */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.go-back-link {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: #66ff66; /* light green text */
+  text-decoration: none;
+}
+
+.success-message {
+  color: #66ff66; /* light green text */
+  font-size: 3em; /* large size text */
+  text-align: center;
+}
+
+.additional-message {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.additional-message p {
+  color: #66ff66; /* light green text */
+  font-size: 1.2em; /* small font size */
+}

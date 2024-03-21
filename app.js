@@ -40,7 +40,7 @@ app.get('/login-ssn', (req, res) => {
 
 // Define a route to render login-qr.ejs
 app.get('/login-qr', (req, res) => {
-  loginqrfunc(req);
+  loginQrFunc(req);
   res.render('login-qr', { title: 'BankID Login using QR Code', qrImg: bid.generatedQrCode, orderStatus: bid.orderStat});
 });
 
@@ -61,11 +61,11 @@ app.get('/sign-document', (req, res) => {
 
 //Bank ID using Social Security Number (personnummer in Sweden)  
 app.get('/ssn', async (req, res) => {
-  res.render('ssn')
+  res.render('ssn');
 })
 
-app.get('/uploadfile', (req, res) => {
-  res.render('uploadfile')
+app.get('/success', (req, res) => {
+  res.render('success');
 })
 
 
@@ -125,7 +125,7 @@ app.get('/onsamedevice', async (req, res) => {
   await bid.orderStatus();
   console.log(bid.autoStartToken)
   
-  const sameDeviceURL = new URL(`https://demo.bankid.com//?autostarttoken=[${bid.autoStartToken}]&redirect=http://localhost:3001/home`);
+  const sameDeviceURL = new URL(`https://demo.bankid.com//?autostarttoken=[${bid.autoStartToken}]&redirect=http://localhost:3001/`);
 
   res.redirect(sameDeviceURL) 
   
@@ -282,7 +282,7 @@ function checkURI(q){
 }
 
 //QR Code Call
-async function loginqrfunc(req){
+async function loginQrFunc(req){
   checkURI(req);  
   //checkipaddress();
 
