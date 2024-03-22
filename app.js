@@ -38,6 +38,12 @@ app.get('/login-ssn', (req, res) => {
   res.render('login-ssn', { title: 'BankID Login using SSN (Personnummer)' });
 });
 
+// Define a route to render login-ssn-notice.ejs
+app.post('/login-ssn-notice', (req, res) => {
+  loginSsnNoticeFunc(req);
+  res.render('login-ssn-notice', { title: 'BankID Login using SSN (Personnummer)', orderStatus: bid.orderStat});
+});
+
 // Define a route to render login-qr.ejs
 app.get('/login-qr', (req, res) => {
   loginQrFunc(req);
@@ -54,49 +60,33 @@ app.get('/using-another-device', (req, res) => {
   res.render('using-another-device', { title: 'Using Another Device' });
 });
 
+// Define a route to render sign-text.ejs
+app.get('/sign-text', (req, res) => {
+  res.render('sign-text', { title: 'Sign Text using BankID' });
+});
+
+// Define a route to render sign-text-notice.ejs
+app.post('/sign-text-notice', (req, res) => {
+  signTextFunc(req,res);
+  res.render('sign-text-notice', { title: 'Sign Text using BankID' });
+});
+
 // Define a route to render sign-document.ejs
 app.get('/sign-document', (req, res) => {
   res.render('sign-document', { title: 'Sign Document using BankID' });
 });
 
-//Bank ID using Social Security Number (personnummer in Sweden)  
-app.get('/ssn', async (req, res) => {
-  res.render('ssn');
-})
-
+//Show success page
 app.get('/success', (req, res) => {
   res.render('success');
 })
 
+//Show error page
 app.get('/fail', (req, res) => {
   res.render('fail');
 })
 
-app.post('/signqrcode', async (req, res) => {
-  checkURI(req);  
-  //checkipaddress();
-  bid.time = 0;
-  bid.sign = true;
-  console.log(req.body);
-  const ssn = req.body.ssn;
-
-  if(!ssn){
-    return res.send("Please Enter social security number")
-  }
-  bid.documentToSign = "Bolagsverket.pdf";
-  await bid.signQr(ssn);
-  await bid.orderStatus();
-  
-  var qrStartSecret = bid.qrStartSecret;
-
-  var qrgeneratedcode = "bankid." + bid.qrStartToken + "." + bid.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bid.time.toString()).digest('hex');
-  bid.generatedQrCode = qrgeneratedcode;
-  
-  res.render("ssn-status", {qrImg: bid.generatedQrCode, orderStatus:bid.orderStat}); // qrcode refers to qrcode.ejs
-})
-
-
-app.post('/authssn', async (req, res) => {
+async function loginSsnNoticeFunc(req) {
   checkURI(req);  
   //checkipaddress();
   bid.time = 0;
@@ -109,14 +99,31 @@ app.post('/authssn', async (req, res) => {
   }
   await bid.auth(ssn);
   await bid.orderStatus();
-  
-  var qrStartSecret = bid.qrStartSecret;
+}
 
-  var qrgeneratedcode = "bankid." + bid.qrStartToken + "." + bid.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bid.time.toString()).digest('hex');
-  bid.generatedQrCode = qrgeneratedcode;
+async function signTextFunc(req,res){
+    checkURI(req);  
+    bid.time = 0;
+    bid.sign = true;
+    console.log(req.body);
+    const ssn = req.body.ssn;
+    req.params.personalNumber = ssn;
   
-  res.render("ssn-status", {qrImg: bid.generatedQrCode, orderStatus:bid.orderStat}); // qrcode refers to qrcode.ejs
-})
+    if(!ssn){
+      return res.send("Please Enter social security number")
+    }
+    bid.documentToSign = "Bolagsverket.pdf";
+    await bid.signQr(ssn);
+    await bid.orderStatus();
+    
+    var qrStartSecret = bid.qrStartSecret;
+  
+    var qrgeneratedcode = "bankid." + bid.qrStartToken + "." + bid.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bid.time.toString()).digest('hex');
+    bid.generatedQrCode = qrgeneratedcode;
+    
+    res.render("sign-text-notice", {qrImg: bid.generatedQrCode, orderStatus:bid.orderStat}); // qrcode refers to qrcode.ejs  
+}
+
 
 app.get('/onsamedevice', async (req, res) => {
   checkURI(req);  
@@ -135,7 +142,7 @@ app.get('/onsamedevice', async (req, res) => {
 })
 
 
- const storage = multer.memoryStorage()
+const storage = multer.memoryStorage()
 
 var upload = multer({ 
   limits: {
@@ -151,6 +158,10 @@ var upload = multer({
 
 });
 
+//QR Code Call
+async function loginQrFunc(req){
+  checkURI(req);  
+  //checkipaddress();
 
 app.get('/auth', async (req, res) => {
   const data = JSON.stringify({
@@ -180,28 +191,17 @@ app.get('/auth', async (req, res) => {
         //console.log(d);
         parsedData = JSON.parse(d);
 
-  let orderStatus = await orderStatusCollect(parsedData.orderRef)
-  //console.log(orderStatus.status)
-  
-  var qrgeneratedcode = "bankid." + parsedData.qrStartToken + "." + 1 + "." + parsedData.qrStartSecret;
-  let stringdata = JSON.stringify(qrgeneratedcode)
+  await bid.authQr();
+  await bid.orderStatus();
 
-      // Print the QR code to terminal
-    QRCode.toString(stringdata,{type:'terminal'},
-    function (err, QRcode) {
+  var qrStartSecret = bid.qrStartSecret;
 
-    if(err) {
-      return console.log("error occurred")
-    }
-    // Printing the generated code
-    console.log(QRcode)
-    
-    
-    })
+  var qrgeneratedcode = "bankid." + bid.qrStartToken + "." + bid.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bid.time.toString()).digest('hex');
+  bid.generatedQrCode = qrgeneratedcode;
 
-  res.send('See QR Code in console')
-         
-})
+  console.log("generated qrimage is " + bid.generatedQrCode);
+}
+
 
 const getDetailsForCollect = async (data, options) => {
   //console.log('dopost function')
@@ -284,24 +284,6 @@ function checkURI(q){
   }
 }
 
-//QR Code Call
-async function loginQrFunc(req){
-  checkURI(req);  
-  //checkipaddress();
-
-  bid.time = 0;
-  bid.sign = false;
-
-  await bid.authQr();
-  await bid.orderStatus();
-
-  var qrStartSecret = bid.qrStartSecret;
-
-  var qrgeneratedcode = "bankid." + bid.qrStartToken + "." + bid.time.toString() + "." + crypto.createHmac('sha256', qrStartSecret).update(bid.time.toString()).digest('hex');
-  bid.generatedQrCode = qrgeneratedcode;
-
-  console.log("generated qrimage is " + bid.generatedQrCode);
-}
 
 app.get('/ajaxcall/', async (req, res) => {
   checkURI(req);  

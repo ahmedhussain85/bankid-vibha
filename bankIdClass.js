@@ -95,6 +95,7 @@ class BankId {
         var parsedData;
         const data = JSON.stringify({
             endUserIp       : "83.254.22.249",
+            personalNumber  :   prno,
             requirement     : {"allowFingerprint": true},
         })
         const options = {
@@ -184,7 +185,7 @@ class BankId {
         var parsedData;
         const data = JSON.stringify({
             endUserIp       : "83.254.22.249",
-            personalNumber  :   prno,
+            //personalNumber  :   prno,
             requirement     : {"allowFingerprint": true},
         })
         const options = {
@@ -226,7 +227,18 @@ class BankId {
     async signQr(prno)
     {
         // const documentToSign = "vaccine.pdf"
-        const message = "I hearby sign the document "  + this.documentToSign + " using bankid";
+        //const message = "I hearby sign the document "  + this.documentToSign + " using bankid";
+        //const message = "Amount:\n2000.00 SEK\nMerchant:\nThe company\n---Sum that will leave the account:\n##2000.00 SEK";
+        const message = `# Overview
+        To make the user even more aware of what they are signing it is possible to apply simple formatting to the text to be signed. This is achieved by using the new parameter userVisibleDataFormat in the call to the appapi2.bankid.com/rp/v5/sign operation and to use the syntax and special characters specified in this addendum in userVisibleData.
+        ## Syntax, Special Characters and rendering
+        *Encoding and valid characters*
+        + The encoding must be UTF-8.
+        + In this document, characters are referred to by their Unicode code-points when necessary.
+        + Valid characters are U+0020 to U+007E, U+00A0 to U+FFEF as well as U+000A (Newline), U+0009 (Tab) and U+000D (Carriage return).
+        ---
+        Have a nice day!
+        ---`;
         var parsedData;
         
         // const loadingTask = this.pdfjsLib.getDocument(this.documentToSign);
@@ -238,9 +250,9 @@ class BankId {
             personalNumber:prno,
             endUserIp: "83.254.22.249",
             requirement: { "allowFingerprint": true
-        },
-        userVisibleData: Buffer.from(message).toString('base64')
-          //userNonVisibleData: Buffer.from(fingerprints).toString('base64'),
+          },
+          userVisibleData: Buffer.from(message).toString('base64'),
+          userVisibleDataFormat: "simpleMarkdownV1"
         })
         console.log(data)
         
