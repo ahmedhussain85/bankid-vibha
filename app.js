@@ -163,33 +163,8 @@ async function loginQrFunc(req){
   checkURI(req);  
   //checkipaddress();
 
-app.get('/auth', async (req, res) => {
-  const data = JSON.stringify({
-    //personalNumber  : req.params.personalNumber, 
-    endUserIp       : userIp,
-    requirement     : {"allowFingerprint": true},
-  })
-  
-  const options = {
-    hostname: 'appapi2.test.bankid.com',
-    port: 443,
-    path: '/rp/v5.1/auth',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Content-Length': data.length
-    },
-    json: true, 
-    pfx: fs.readFileSync('./FPTestcert4_20230629.p12'),
-    passphrase: 'qwerty123',
-    rejectUnauthorized: false,
-    resolveWithFullResponse: true,
-    timeout: 5000,
-  }
-
-  let d = await getDetailsForCollect(data, options);
-        //console.log(d);
-        parsedData = JSON.parse(d);
+  bid.time = 0;
+  bid.sign = false;
 
   await bid.authQr();
   await bid.orderStatus();
